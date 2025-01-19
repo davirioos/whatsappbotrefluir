@@ -19,9 +19,19 @@ const client = new Client({
     authStrategy: new LocalAuth({ clientId: "client" }),
     puppeteer: {
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-gpu'
+        ]
     }
 });
+
 
 // Função para enviar mensagem pelo WhatsApp
 async function sendWhatsAppMessage(to, ...messages) {
@@ -295,9 +305,11 @@ client.on('ready', () => {
 });
 
 // Rota para exibir QR Code
+app.use('/public', express.static(path.join(__dirname, 'public')));
 app.get('/qrcode', (req, res) => {
-    res.sendFile(path.join(__dirname, 'qrcode.png'));
+    res.sendFile(path.join(__dirname, 'public', 'qrcode.png'));
 });
+
 
 const stateFilePath = path.join(__dirname, 'conversa_estado.json');
 if (fs.existsSync(stateFilePath)) {
